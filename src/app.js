@@ -1,11 +1,11 @@
 import React from 'react';
 import './app.css';
-import Test from './components/test/test.tsx';
+import MainRouter from './modules/Global/components/mainRouter';
 
 function App() {
     return (
         <div>
-            <Test />
+            <MainRouter />
         </div>
     );
 }
