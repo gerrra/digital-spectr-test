@@ -1,5 +1,20 @@
 .main-page {
-  h1 {
-    color: teal;
+  padding: 40px;
+  box-sizing: border-box;
+  min-height: 100vh;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+
+  &__header {
+    text-align: center;
+    margin: 0 0 24px;
+  }
+
+  &__launches-wrap {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: 1fr 2fr;
+    box-sizing: border-box;
   }
 }

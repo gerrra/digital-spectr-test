@@ -1,0 +1,42 @@
+$default-box-shadow: 0px 0px 10px 0px rgb(34 60 80 / 20%);
+
+.launch-card {
+  padding: 40px;
+
+  &__header {
+    margin: 0 0 24px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__button-back {
+    padding: 8px 16px;
+    color: #fff;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    background-color: rgb(180, 180, 180);
+    -webkit-box-shadow: $default-box-shadow;
+    -moz-box-shadow: $default-box-shadow;
+    box-shadow: $default-box-shadow;
+
+    &:hover {
+      background-color: rgb(161, 161, 161);
+    }
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    margin-bottom: 12px;
+  }
+
+  &__item-name {
+    margin: 0 8px 0 0;
+  }
+}

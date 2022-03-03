@@ -3,11 +3,11 @@ import { toast } from "react-toastify";
 export class BaseAction {
     static DEFAULT_URL = '';
 
-    static apiResource<modelType>(
+    static apiResource(
         url: string,
-        method: string = REQUEST_METHOD.POST,
+        method: string = REQUEST_METHOD.GET,
         params?: any,
-    ): Promise<modelType> {
+    ): Promise<any> {
         let newUrl: string = url;
         if (method === REQUEST_METHOD.GET && params) {
             const queryParams: string = Object

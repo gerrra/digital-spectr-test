@@ -29,6 +29,7 @@ module.exports = {
     devtool: 'source-map',
     devServer: {
         hot: true,
+        historyApiFallback: true,
     },
     module: {
         rules: [
@@ -73,6 +74,7 @@ module.exports = {
         extensions: ['.tsx', '.ts', '.jsx', '.js'],
     },
     output: {
+        publicPath: '/',
         path: path.resolve(__dirname, 'dist'),
         filename: "bundle.js",
         assetModuleFilename: 'assets/[hash][ext][query]',
