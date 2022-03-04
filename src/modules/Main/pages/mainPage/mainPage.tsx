@@ -5,21 +5,25 @@ import './mainPage.scss';
 import { inject, observer } from 'mobx-react';
 import { LaunchListParams } from '../../interfaces/launchListParams';
 import { Launches } from '../../components/launches/launches';
-import { DragAndDropStore } from '../../stores/dragAndDropStore';
+import { LaunchStore } from '../../stores/launchStore';
+import { ModalDialog } from '../../components/modalDialog/modalDialog';
 
 interface MainPageComponentProps {
-    dragAndDropStore?: DragAndDropStore;
+    launchStore?: LaunchStore;
 }
 
 const MainPageComponent: React.FC<MainPageComponentProps> = (props) => {
+    const [showModal, setShowModal] = useState<boolean>(false);
     const [pastLaunchList, setPastLaunchList] = useState<Launch[]>([]);
-    const [launchLists, setLaunchLists] = useState<LaunchListParams[]>(props.dragAndDropStore.getLaunchList());
+    const [launchLists, setLaunchLists] = useState<LaunchListParams[]>(props.launchStore.getLaunchList());
 
     useEffect(
         () => {
             getPastLaunchList();
-            getUpcomingLaunchList();
-            props.dragAndDropStore.launchList.observe_((value: any) => setLaunchLists(value.newValue));
+            if (!props.launchStore.getLaunchList()[0].launches.length) getUpcomingLaunchList();
+
+            props.launchStore.launchList.observe_((value: any) => setLaunchLists(value.newValue));
+            props.launchStore.showModalDialog.observe_((value: any) => setShowModal(value.newValue));
         },
         [],
     );
@@ -40,40 +44,50 @@ const MainPageComponent: React.FC<MainPageComponentProps> = (props) => {
             .then((launches: Launch[]) => {
                 const newLaunchLists: LaunchListParams[] = launchLists;
                 newLaunchLists[0].launches = launches;
-                props.dragAndDropStore.setLaunchList(newLaunchLists);
-            })
+                props.launchStore.setLaunchList(newLaunchLists);
+            });
     }
 
     return (
-        <div
-            className={'main-page'}
-        >
-            <h1
-                className={'main-page__header'}
-            >
-                Explore the space
-            </h1>
-            <div
-                className={'main-page__launches-wrap'}
-            >
-                <Launches
-                    title={'PAST LAUNCHES'}
-                    launches={pastLaunchList}
+        <div>
+            {
+                showModal &&
+                <ModalDialog
+                    closeCallback={(update?: boolean) => props.launchStore.setShowModalDialog(false, update)}
                 />
-                {
-                    launchLists.map((launchList: LaunchListParams, index: number) => (
-                        <Launches
-                            dragInDrop
-                            key={index}
-                            parent={launchList}
-                            title={launchList.title}
-                            launches={launchList.launches}
-                        />
-                    ))
-                }
+            }
+            <div
+                className={'main-page'}
+            >
+                <h1
+                    className={'main-page__header'}
+                >
+                    Explore the space
+                </h1>
+                <div
+                    className={'main-page__launches-wrap'}
+                >
+                    <Launches
+                        dragInDrop={false}
+                        title={'PAST LAUNCHES'}
+                        launches={pastLaunchList}
+                    />
+                    {
+                        launchLists.map((launchList: LaunchListParams, index: number) => (
+                            <Launches
+                                dragInDrop
+                                key={index}
+                                parent={launchList}
+                                title={launchList.title}
+                                launches={launchList.launches}
+                                updateShowModal={() => setShowModal(true)}
+                            />
+                        ))
+                    }
+                </div>
             </div>
         </div>
     );
 }
 
-export const MainPage = inject('dragAndDropStore')(observer(MainPageComponent));
+export const MainPage = inject('launchStore')(observer(MainPageComponent));

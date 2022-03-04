@@ -2,10 +2,10 @@ import React from 'react';
 import { Provider } from 'mobx-react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import LaunchCard from '../modules/Main/pages/launchCard/launchCard';
-import dragAndDropStore from '../modules/Main/stores/dragAndDropStore';
+import launchStore from '../modules/Main/stores/launchStore';
 import { MainPage } from '../modules/Main/pages/mainPage/mainPage';
 
-const stores = { dragAndDropStore };
+const stores = { launchStore };
 
 const MainRouter = () => (
     <Provider

@@ -3,13 +3,14 @@ import { LAUNCHES_TYPE } from '../emuns/launchType';
 import { LaunchListParams } from '../interfaces/launchListParams';
 import Launch from '../model/launch';
 
-class DragAndDropStore {
+class LaunchStore {
+    @observable showModalDialog: IObservableValue<boolean>;
+    @observable updateCallback: IObservableValue<() => any>;
     @observable selectLaunch: IObservableValue<Launch | null>;
     @observable launchList: IObservableValue<LaunchListParams[]>;
     @observable selectLaunchList: IObservableValue<LaunchListParams | null>;
 
     constructor() {
-        this.selectLaunch = observable.box<Launch | null>(null);
         this.launchList = observable.box<LaunchListParams[]>([
             {
                 id: '0',
@@ -22,6 +23,9 @@ class DragAndDropStore {
                 title: LAUNCHES_TYPE.MY_LAUNCHES.name,
             },
         ]);
+        this.showModalDialog = observable.box<boolean>(false);
+        this.selectLaunch = observable.box<Launch | null>(null);
+        this.updateCallback = observable.box<() => any>(() => null);
         this.selectLaunchList = observable.box<LaunchListParams | null>(null);
     }
 
@@ -66,9 +70,24 @@ class DragAndDropStore {
     setLaunchList = (launchList: LaunchListParams[]): void => {
         this.launchList.set(launchList);
     };
+
+    /**
+     * Получить флаг открытия модалки
+     */
+    getShowModalDialog = (): boolean => {
+        return this.showModalDialog.get();
+    };
+ 
+    /**
+     * Сохранить флаг открытия модалки
+     */
+    setShowModalDialog = (showModalDialog: boolean, update?: boolean): void => {
+        this.showModalDialog.set(showModalDialog);
+        if (update) this.updateCallback.get()();
+    };
 }
 
-const dragAndDropStore = new DragAndDropStore();
+const launchStore = new LaunchStore();
 
-export default dragAndDropStore;
-export { DragAndDropStore };
+export default launchStore;
+export { LaunchStore };

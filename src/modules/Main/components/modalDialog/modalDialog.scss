@@ -1,0 +1,63 @@
+$default-box-shadow: 0px 0px 10px 0px rgb(34 60 80 / 20%);
+
+.modal-dialog {
+  position: relative;
+
+  &__shadow-background {
+    width: 100vw;
+    height: 100vh;
+    opacity: 0.5;
+    background-color: #000;
+    position: absolute;
+    z-index: 1;
+  }
+
+  &__body-wrap {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+  }
+
+  &__body {
+    width: 400px;
+    z-index: 2;
+    background-color: #fff;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 8px;
+    padding: 24px;
+    color: #000;
+  }
+
+  &__action-wrap {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  h1 {
+    margin: 0;
+  }
+
+  button {
+    border: 0;
+    padding: 8px 16px;
+    color: #fff;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    background-color: rgb(180, 180, 180);
+    -webkit-box-shadow: $default-box-shadow;
+    -moz-box-shadow: $default-box-shadow;
+    box-shadow: $default-box-shadow;
+
+    &:hover {
+      background-color: rgb(161, 161, 161);
+    }
+  }
+}

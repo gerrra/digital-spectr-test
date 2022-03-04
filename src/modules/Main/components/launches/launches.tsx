@@ -3,15 +3,18 @@ import { Link } from 'react-router-dom';
 import Launch from '../../model/launch';
 import './launches.scss';
 import { inject, observer } from 'mobx-react';
-import { DragAndDropStore } from '../../stores/dragAndDropStore';
+import { LaunchStore } from '../../stores/launchStore';
 import { LaunchListParams } from '../../interfaces/launchListParams';
+import { LAUNCHES_TYPE } from '../../emuns/launchType';
+import { toast } from 'react-toastify';
 
 interface LaunchesProps {
     title: string;
     launches?: Launch[];
     dragInDrop?: boolean;
     parent?: LaunchListParams;
-    dragAndDropStore?: DragAndDropStore;
+    updateShowModal?: () => any;
+    launchStore?: LaunchStore;
 }
 
 const LaunchesComponent: React.FC<LaunchesProps> = (props) => {
@@ -40,8 +43,8 @@ const LaunchesComponent: React.FC<LaunchesProps> = (props) => {
     const dragStartHandler = (e: any, parent: LaunchListParams, launch: Launch) => {
         if (!props.dragInDrop) return;
 
-        props.dragAndDropStore.setSelectLaunch(launch);
-        props.dragAndDropStore.setSelectLaunchList(parent);
+        props.launchStore.setSelectLaunch(launch);
+        props.launchStore.setSelectLaunchList(parent);
     }
 
     const dragEndHandler = (e: any) => {
@@ -50,30 +53,53 @@ const LaunchesComponent: React.FC<LaunchesProps> = (props) => {
         e.target.style.boxShadow = 'none';
     }
 
+    /**
+     * Проверяем тип полёта, чтобы вывести предупреждающую модалку
+     * @param e
+     * @param parent
+     */
+    const checkLaunchType = (e: any, parent: LaunchListParams) => {
+        if (!props.dragInDrop) return;
+
+        if (parent.title === LAUNCHES_TYPE.LAUNCHES.name) {
+            props.launchStore.setShowModalDialog(true);
+            props.launchStore.updateCallback.set(() => dropCardHandler(e, parent));
+        } else dropCardHandler(e, parent);
+    }
+
     const dropCardHandler = (e: any, parent: LaunchListParams) => {
         if (!props.dragInDrop) return;
 
-        const launchList: LaunchListParams[] = props.dragAndDropStore.getLaunchList();
-        const currentItems: LaunchListParams = props.dragAndDropStore.getSelectLaunchList();
-        const currentItem: Launch = props.dragAndDropStore.getSelectLaunch();
+        const launchList: LaunchListParams[] = props.launchStore.getLaunchList();
+        const currentItems: LaunchListParams = props.launchStore.getSelectLaunchList();
+        const currentItem: Launch = props.launchStore.getSelectLaunch();
+
+        if (!currentItems) return;
 
         parent.launches.push(currentItem);
 
         const currentIndex: number = currentItems.launches.indexOf(currentItem);
         currentItems.launches.splice(currentIndex, 1);
 
-        props.dragAndDropStore.setLaunchList(launchList.map((b) => {
+        props.launchStore.setLaunchList(launchList.map((b) => {
             if (b.id === parent.id) return parent;
             if (b.id === currentItems.id) return currentItems;
             return b;
         }));
+
+        if (parent.title === LAUNCHES_TYPE.MY_LAUNCHES.name) {
+            toast(`Полёт ${currentItem.mission_name} успешно забронирован!`, { type: 'success' })
+        }
+        if (parent.title === LAUNCHES_TYPE.LAUNCHES.name) {
+            toast(`Бронирование полёта ${currentItem.mission_name} успешно отменено!`, { type: 'success' })
+        }
     }
 
     return (
         <div
             className={'launches'}
             onDragOver={dragOverHandler}
-            onDrop={(e) => dropCardHandler(e, props.parent)}
+            onDrop={(e) => checkLaunchType(e, props.parent)}
         >
             <div
                 className={'launches__item-title'}
@@ -111,4 +137,4 @@ const LaunchesComponent: React.FC<LaunchesProps> = (props) => {
     );
 }
 
-export const Launches = inject('dragAndDropStore')(observer(LaunchesComponent));
+export const Launches = inject('launchStore')(observer(LaunchesComponent));

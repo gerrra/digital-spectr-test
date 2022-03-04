@@ -40,25 +40,30 @@ const LaunchCard = () => {
      */
     const cardInfo: CardInfoParams[] = [
         {
-            name: 'Название полёта -',
+            name: 'Название полёта:',
             value: launch?.mission_name,
             hide: !launch?.mission_name,
         },
         {
-            name: 'Номер рейса -',
+            name: 'Номер рейса:',
             value: launch?.flight_number,
             hide: !launch?.flight_number,
         },
         {
-            name: 'Дата запуска по местному времени -',
+            name: 'Дата запуска по местному времени:',
             value: moment(launch?.launch_date_local)
                 .format('DD.MM.YYYY HH:mm'),
             hide: !launch?.launch_date_local,
         },
         {
-            name: 'Название ракеты -',
+            name: 'Название ракеты:',
             value: launch?.rocket?.rocket_name,
             hide: !launch?.rocket?.rocket_name,
+        },
+        {
+            name: 'Детали:',
+            value: launch?.details,
+            hide: !launch?.details,
         },
     ];
 
@@ -92,11 +97,11 @@ const LaunchCard = () => {
                             >
                                 { info.name }
                             </h3>
-                            <div
+                            <span
                                 className={'launch-card__item-value'}
                             >
                                 { info.value }
-                            </div>
+                            </span>
                         </div>
                     ))
             }

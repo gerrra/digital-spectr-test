@@ -2,6 +2,7 @@ import * as t from 'io-ts';
 import LaunchRocket, { LaunchRocketType } from './launchRocket';
 
 export const LaunchType = t.interface({
+    details: t.union([t.string, t.null, t.undefined]),
     launch_year: t.union([t.string, t.null, t.undefined]),
     mission_name: t.union([t.string, t.null, t.undefined]),
     tentative_max_precision: t.union([t.string, t.null, t.undefined]),
@@ -26,6 +27,7 @@ export interface LaunchDTO extends t.TypeOf<typeof LaunchType> {
 }
 
 class Launch {
+    details: string | null;
     launch_year: string | null;
     mission_name: string | null;
     tentative_max_precision: string | null;
@@ -46,6 +48,7 @@ class Launch {
     rocket: LaunchRocket | null;
 
     constructor(params: LaunchDTO) {
+        this.details = params.details ?? null;
         this.launch_year = params.launch_year ?? null;
         this.mission_name = params.mission_name ?? null;
         this.tentative_max_precision = params.tentative_max_precision ?? null;
