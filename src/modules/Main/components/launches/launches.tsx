@@ -35,21 +35,15 @@ const LaunchesComponent: React.FC<LaunchesProps> = (props) => {
     }
 
     const dragLeaveHandler = (e: any) => {
-        if (!props.dragInDrop) return;
-
         e.target.style.boxShadow = 'none';
     }
 
     const dragStartHandler = (e: any, parent: LaunchListParams, launch: Launch) => {
-        if (!props.dragInDrop) return;
-
         props.launchStore.setSelectLaunch(launch);
         props.launchStore.setSelectLaunchList(parent);
     }
 
     const dragEndHandler = (e: any) => {
-        if (!props.dragInDrop) return;
-
         e.target.style.boxShadow = 'none';
     }
 
@@ -59,8 +53,6 @@ const LaunchesComponent: React.FC<LaunchesProps> = (props) => {
      * @param parent
      */
     const checkLaunchType = (e: any, parent: LaunchListParams) => {
-        if (!props.dragInDrop) return;
-
         if (parent.title === LAUNCHES_TYPE.LAUNCHES.name) {
             props.launchStore.setShowModalDialog(true);
             props.launchStore.updateCallback.set(() => dropCardHandler(e, parent));
@@ -68,8 +60,6 @@ const LaunchesComponent: React.FC<LaunchesProps> = (props) => {
     }
 
     const dropCardHandler = (e: any, parent: LaunchListParams) => {
-        if (!props.dragInDrop) return;
-
         const launchList: LaunchListParams[] = props.launchStore.getLaunchList();
         const currentItems: LaunchListParams = props.launchStore.getSelectLaunchList();
         const currentItem: Launch = props.launchStore.getSelectLaunch();
@@ -81,13 +71,13 @@ const LaunchesComponent: React.FC<LaunchesProps> = (props) => {
         const currentIndex: number = currentItems.launches.indexOf(currentItem);
         currentItems.launches.splice(currentIndex, 1);
 
-        props.launchStore.setLaunchList(launchList.map((b) => {
-            if (b.id === parent.id) return parent;
-            if (b.id === currentItems.id) return currentItems;
-            return b;
+        props.launchStore.setLaunchList(launchList.map((launches: LaunchListParams) => {
+            if (launches.id === parent.id) return parent;
+            if (launches.id === currentItems.id) return currentItems;
+            return launches;
         }));
 
-        if (parent.title === LAUNCHES_TYPE.MY_LAUNCHES.name) {
+        if (parent.title === LAUNCHES_TYPE.MY_LAUNCHES.name && parent.id !== currentItems.id) {
             toast(`Полёт ${currentItem.mission_name} успешно забронирован!`, { type: 'success' })
         }
         if (parent.title === LAUNCHES_TYPE.LAUNCHES.name) {
