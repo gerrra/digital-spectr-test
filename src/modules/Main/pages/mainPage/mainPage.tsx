@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { LaunchesActions } from '../../actions/launchesActions';
 import Launch from '../../model/launch';
-import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import './mainPage.scss';
-import Launches from '../../components/launches/launches';
+import { inject, observer } from 'mobx-react';
+import { LaunchListParams } from '../../interfaces/launchListParams';
+import { Launches } from '../../components/launches/launches';
+import { DragAndDropStore } from '../../stores/dragAndDropStore';
 
-const MainPage = () => {
+interface MainPageComponentProps {
+    dragAndDropStore?: DragAndDropStore;
+}
+
+const MainPageComponent: React.FC<MainPageComponentProps> = (props) => {
     const [pastLaunchList, setPastLaunchList] = useState<Launch[]>([]);
-    const [bookingLaunchList, setBookingLaunchList] = useState<Launch[]>([]);
-    const [upcomingLaunchList, setUpcomingLaunchList] = useState<Launch[]>([]);
+    const [launchLists, setLaunchLists] = useState<LaunchListParams[]>(props.dragAndDropStore.getLaunchList());
 
     useEffect(
         () => {
             getPastLaunchList();
             getUpcomingLaunchList();
+            props.dragAndDropStore.launchList.observe_((value: any) => setLaunchLists(value.newValue));
         },
         [],
     );
@@ -31,11 +37,11 @@ const MainPage = () => {
      */
     const getUpcomingLaunchList = () => {
         LaunchesActions.upcomingLaunchList()
-            .then((launches: Launch[]) => setUpcomingLaunchList(launches));
-    }
-
-    const onDragEnd = (result: DropResult) => {
-
+            .then((launches: Launch[]) => {
+                const newLaunchLists: LaunchListParams[] = launchLists;
+                newLaunchLists[0].launches = launches;
+                props.dragAndDropStore.setLaunchList(newLaunchLists);
+            })
     }
 
     return (
@@ -54,24 +60,20 @@ const MainPage = () => {
                     title={'PAST LAUNCHES'}
                     launches={pastLaunchList}
                 />
-                <DragDropContext
-                    onDragEnd={onDragEnd}
-                >
-
-                </DragDropContext>
-                <Launches
-                    dragInDrop
-                    title={'LAUNCHES'}
-                    launches={upcomingLaunchList}
-                />
-                <Launches
-                    dragInDrop
-                    title={'MY LAUNCHES'}
-                    launches={bookingLaunchList}
-                />
+                {
+                    launchLists.map((launchList: LaunchListParams, index: number) => (
+                        <Launches
+                            dragInDrop
+                            key={index}
+                            parent={launchList}
+                            title={launchList.title}
+                            launches={launchList.launches}
+                        />
+                    ))
+                }
             </div>
         </div>
     );
 }
 
-export default MainPage;
+export const MainPage = inject('dragAndDropStore')(observer(MainPageComponent));

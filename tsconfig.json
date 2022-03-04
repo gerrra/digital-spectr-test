@@ -8,7 +8,9 @@
         "allowJs": true,
         "sourceMap": true,
         "esModuleInterop": true,
+        "downlevelIteration": true,
         "moduleResolution": "node",
+        "experimentalDecorators": true,
         "allowSyntheticDefaultImports": true,
     }
 }
